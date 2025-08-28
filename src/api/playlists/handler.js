@@ -1,15 +1,12 @@
+const autoBind = require('auto-bind');
+
 class PlaylistsHandler {
   constructor(playlistsService, songsService, validator) {
     this._songsService = songsService;
     this._playListService = playlistsService;
     this._validator = validator;
-    this.postPlaylistHandler = this.postPlaylistHandler.bind(this);
-    this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this);
-    this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
-    this.postPlaylistSongHandler = this.postPlaylistSongHandler.bind(this);
-    this.getPlaylistSongHandler = this.getPlaylistSongHandler.bind(this);
-    this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
-    this.getActivitiesHandler = this.getActivitiesHandler.bind(this);
+
+    autoBind(this);
   }
 
   async postPlaylistHandler(request, h) {
@@ -106,13 +103,13 @@ class PlaylistsHandler {
     await this._playListService.verifyPlaylistAccess(id, credentialId);
     const activitiesPlaylist = await this._playListService.getActivities(id);
 
-    const response = h.response({
+    return {
       status: 'success',
-      playlistId: id,
-      activities: activitiesPlaylist,
-    });
-    response.code(200);
-    return response;
+      data: {
+        playlistId: id,
+        activities: activitiesPlaylist,
+      },
+    };
   }
 }
 module.exports = PlaylistsHandler;
